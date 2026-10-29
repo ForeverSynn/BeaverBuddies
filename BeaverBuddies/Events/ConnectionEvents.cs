@@ -1,8 +1,11 @@
 ﻿using BeaverBuddies.Connect;
 using BeaverBuddies.IO;
+using BeaverBuddies.ModCompat;
 using BeaverBuddies.Reporting;
 using BeaverBuddies.Util;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Timberborn.CoreUI;
 using Timberborn.GameSaveRepositorySystem;
@@ -22,6 +25,9 @@ namespace BeaverBuddies.Events
         public string serverGameVersion;
         //public string mapName;
         public bool isDebugMode;
+        // All mods the Host has enabled (null if the Host runs an older
+        // version of BeaverBuddies that does not send them).
+        public List<ModInfo> serverMods;
 
         public override void Replay(IReplayContext context)
         {
@@ -42,6 +48,18 @@ namespace BeaverBuddies.Events
                 warningMessage = $"Warning! Server debug mode ({isDebugMode}) does not match client debug mode ({Settings.Debug}).\n" +
                     $"Please update your config files to be in or not in debug mode.";
             }
+
+            // Other mods change game logic, so both players need the same
+            // ones (with the same versions) to stay in sync.
+            if (serverMods != null)
+            {
+                string modWarning = ModCompatibilityService.DescribeDifferences(serverMods, ModCompatibilityService.EnabledMods);
+                if (modWarning != null)
+                {
+                    warningMessage = warningMessage == null ? modWarning : warningMessage + "\n\n" + modWarning;
+                }
+            }
+
             if (warningMessage != null)
             {
                 Plugin.LogWarning(warningMessage);
@@ -56,6 +74,7 @@ namespace BeaverBuddies.Events
                 serverModVersion = Plugin.Version,
                 serverGameVersion = GameVersions.CurrentVersion.ToString(),
                 isDebugMode = Settings.Debug,
+                serverMods = ModCompatibilityService.EnabledMods.ToList(),
                 //mapName = mapName,
             };
             return message;

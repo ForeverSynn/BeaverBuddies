@@ -1,3 +1,9 @@
+Unreleased
+* Developer mode can now be used in co-op! Dev Panel buttons that change the game (e.g. Add 1000 Science, Fill input inventories, Jump to next season, Kill characters), the beaver/bot spawners, the water brush, "Tick once" and the dev-only entity settings (water source strength and contamination, battery charge, unstable core radius, Freeze/Unfreeze/Boost needs) are now shared with all players instead of desyncing them. View-only dev tools (camera, model toggles, GC, ...) stay local.
+* When joining a game, the mod now checks that the Host and Client have the same mods (and versions) enabled, and lists the ones that differ.
+* The log now lists the enabled mods and warns when another mod patches the same game methods as BeaverBuddies, to help diagnose desyncs caused by mod conflicts.
+* Fixed building the non-Steam version against a GOG install of Timberborn.
+
 v1.7.3
 * Fixed a build bug where Steam options were not included
 

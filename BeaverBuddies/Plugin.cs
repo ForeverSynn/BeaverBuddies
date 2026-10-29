@@ -1,10 +1,12 @@
 ﻿using BeaverBuddies.Connect;
 using BeaverBuddies.DesyncDetecter;
+using BeaverBuddies.DevMode;
 using BeaverBuddies.Editor;
 using BeaverBuddies.Events;
 using BeaverBuddies.Fixes;
 using BeaverBuddies.Help;
 using BeaverBuddies.IO;
+using BeaverBuddies.ModCompat;
 using BeaverBuddies.MultiStart;
 using BeaverBuddies.Reporting;
 using BeaverBuddies.Steam;
@@ -37,6 +39,7 @@ namespace BeaverBuddies
             containerDefinition.Bind<SteamOverlayConnectionService>().AsSingleton();
             containerDefinition.Bind<RegisteredLocalizationService>().AsSingleton();
             containerDefinition.Bind<Settings>().AsSingleton();
+            containerDefinition.Bind<ModCompatibilityService>().AsSingleton();
 
             MultiStartConfigurator.Configure(containerDefinition);
 
@@ -55,6 +58,8 @@ namespace BeaverBuddies
             containerDefinition.Bind<ReportingService>().AsSingleton();
             containerDefinition.Bind<LateTickableBuffer>().AsSingleton();
             containerDefinition.Bind<BeaverBuddies.Ping.PingService>().AsSingleton();
+            // Lets developer mode actions be replayed on all players
+            containerDefinition.Bind<DevModeService>().AsSingleton();
             // We can safely add this regardless of whether tracing is enabled
             // because it will only trace if the config is set to do so.
             containerDefinition.Bind<DesyncDetecterService>().AsSingleton();
@@ -80,6 +85,7 @@ namespace BeaverBuddies
             containerDefinition.Bind<RegisteredLocalizationService>().AsSingleton();
             containerDefinition.Bind<MultiplayerMapMetadataService>().AsSingleton();
             containerDefinition.Bind<Settings>().AsSingleton();
+            containerDefinition.Bind<ModCompatibilityService>().AsSingleton();
 
             //new ReportingService().PostDesync("test").ContinueWith(result => Plugin.Log($"Posted: {result.Result}"));
             containerDefinition.Bind<SteamOverlayConnectionService>().AsSingleton();
