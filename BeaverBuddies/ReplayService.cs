@@ -110,6 +110,10 @@ namespace BeaverBuddies
         public float TargetSpeed  { get; private set; } = 0;
         public bool IsDesynced { get; private set; } = false;
 
+        // The tick at which to pause again after a dev-mode "tick once",
+        // or -1 if no single tick was requested.
+        private int singleTickPauseAt = -1;
+
         private ConcurrentQueue<ReplayEvent> eventsToSend = new ConcurrentQueue<ReplayEvent>();
         private ConcurrentQueue<ReplayEvent> eventsToPlay = new ConcurrentQueue<ReplayEvent>();
 
@@ -472,6 +476,19 @@ namespace BeaverBuddies
             UpdateSpeed();
         }
 
+        /**
+         * Advances the game by exactly one tick and then pauses again, on all
+         * players (used by the developer mode "tick once" key). This should
+         * only be called while replaying an event, so that all players
+         * request the tick at the same time.
+         */
+        public void RequestSingleTick()
+        {
+            singleTickPauseAt = ticksSinceLoad + 1;
+            Plugin.Log($"Single tick requested; pausing again at tick {singleTickPauseAt}");
+            SetTargetSpeed(1);
+        }
+
         private void UpdateSpeed()
         {
             if (EventIO.IsNull) return;
@@ -525,6 +542,15 @@ namespace BeaverBuddies
             }
 
             ticksSinceLoad++;
+
+            if (singleTickPauseAt >= 0 && ticksSinceLoad >= singleTickPauseAt)
+            {
+                // Pause before this tick's buckets run, which is also where
+                // regular (SpeedSetEvent) pauses take effect.
+                singleTickPauseAt = -1;
+                Plugin.Log("Single tick finished; pausing");
+                SetTargetSpeed(0);
+            }
 
             if (io.ShouldSendHeartbeat)
             {

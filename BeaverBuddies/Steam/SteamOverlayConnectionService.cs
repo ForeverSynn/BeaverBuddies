@@ -1,5 +1,8 @@
 ﻿#if IS_STEAM
 using Timberborn.SteamStoreSystem;
+// Only the Steam build of Timberborn ships this assembly (GOG does not),
+// so keep the reference inside the Steam-only build.
+using Timberborn.SteamOverlaySystem;
 #endif
 
 using BeaverBuddies.Connect;
@@ -9,7 +12,6 @@ using System.Collections.Generic;
 using System.Text;
 using Timberborn.SingletonSystem;
 using UnityEngine;
-using Timberborn.SteamOverlaySystem;
 using Timberborn.CoreUI;
 
 namespace BeaverBuddies.Steam
